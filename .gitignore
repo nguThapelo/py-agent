@@ -1,0 +1,12 @@
+# ignore VE
+env/
+
+#data files
+data/knowledge_base.txt
+
+#config 
+config.json
+
+
+
+
