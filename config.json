@@ -1,5 +1,0 @@
-{
-    "openai_api_key": "",
-    "llm_model": "gpt3",
-    "rag_model": "rag"
-}

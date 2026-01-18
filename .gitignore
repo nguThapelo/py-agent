@@ -1,12 +1,11 @@
-# ignore VE
-env/
-
-#data files
-data/knowledge_base.txt
-
-#config 
-config.json
-
-
-
-
+# local env files
+.env
+.env.local
+# Python cache files
+__pycache__/
+*.py[cod]
+# Environment variable files
+*.env
+# IDE specific files
+.vscode/
+.idea/
