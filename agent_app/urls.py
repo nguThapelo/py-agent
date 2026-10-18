@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import index, ask_agent
+from .views import index, ask_tutor
 
 urlpatterns = [
     path('', index, name='index'),
-    path('api/ask/', ask_agent, name='ask_agent'),
+    path('api/ask/', ask_tutor, name='ask_tutor'),
 ]

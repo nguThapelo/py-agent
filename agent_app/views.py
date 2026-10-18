@@ -1,21 +1,27 @@
 from django.shortcuts import render
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes
 from rest_framework.response import Response
-from agents.simple_search import generate_response
+
+from agents.tutor import GRADES, SUBJECTS, get_tutor, sanitize_messages
+
 
 def index(request):
-    """Render the main page."""
-    return render(request, "index.html")
+    """Render the tutor page."""
+    return render(request, "index.html", {"grades": GRADES, "subjects": SUBJECTS})
 
-@api_view(['POST'])
-def ask_agent(request):
-    query = request.data.get("query", "")
+
+@api_view(["POST"])
+@authentication_classes([])
+def ask_tutor(request):
+    """Stateless: the browser sends the recent conversation, nothing is stored."""
+    grade = str(request.data.get("grade", ""))
+    subject = request.data.get("subject", "")
+    messages = sanitize_messages(request.data.get("messages"))
+
+    if grade not in GRADES or subject not in SUBJECTS or not messages:
+        return Response({"error": "Please choose a grade and subject, then type a question."}, status=400)
+
     try:
-        response = generate_response(user_message=query)
-        # Limit message to 200 characters
-        message = response.message
-        if len(message) > 200:
-            message = message + "..."
-        return Response({"message": message})
-    except Exception as e:
-        return Response({"error": str(e)})
+        return Response(get_tutor().reply(grade, subject, messages))
+    except Exception:
+        return Response({"error": "The tutor is unavailable right now. Please try again."}, status=503)
