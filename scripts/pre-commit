@@ -1,0 +1,15 @@
+#!/bin/sh
+# Blocks commits that stage env files, private keys or likely API keys.
+# Install: cp scripts/pre-commit .git/hooks/pre-commit
+staged=$(git diff --cached --name-only --diff-filter=ACM)
+
+echo "$staged" | grep -E '(^|/)\.env($|\.)|\.pem$|\.key$' | grep -v '\.env\.example$' | grep . >/dev/null && {
+  echo "Blocked: an env or key file is staged:"
+  echo "$staged" | grep -E '(^|/)\.env($|\.)|\.pem$|\.key$' | grep -v '\.env\.example$'
+  exit 1
+}
+
+if git diff --cached -U0 | grep -E '^\+' | grep -E "sk-[A-Za-z0-9_-]{20,}|ghp_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|(SECRET_KEY|API_KEY|CLIENT_SECRET|PASSWORD)[A-Z_]*[[:space:]]*=[[:space:]]*['\"][^'\"]{8,}" >/dev/null; then
+  echo "Blocked: staged changes look like they contain a secret. Move it to .env."
+  exit 1
+fi

@@ -8,4 +8,12 @@ __pycache__/
 *.env
 # IDE specific files
 .vscode/
-.idea/
+.idea/.env.*
+!.env.example
+# Keys and certificates
+*.pem
+*.key
+# Virtual environment, caches, local database
+venv/
+.pytest_cache/
+db.sqlite3

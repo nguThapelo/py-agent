@@ -1,11 +1,18 @@
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-KEY = 'uydhbnds-k-jdbsjhb-12312-12312-12312-12312'
+import os
 
-SECRET_KEY = KEY
-DEBUG = True
-ALLOWED_HOSTS = []
+from dotenv import load_dotenv
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
+
+DEBUG = os.getenv("DJANGO_DEBUG", "1") == "1"
+# The dev fallback only works while DEBUG is on; production must set DJANGO_SECRET_KEY.
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY") or ("dev-only-insecure-key" if DEBUG else None)
+if not SECRET_KEY:
+    raise RuntimeError("Set DJANGO_SECRET_KEY when DJANGO_DEBUG=0")
+ALLOWED_HOSTS = [h for h in os.getenv("DJANGO_ALLOWED_HOSTS", "").split(",") if h]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
